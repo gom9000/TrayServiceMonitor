@@ -1,0 +1,75 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# @(#)makefile.mingw32 1.1  2009/10/31
+#   ________        _________________.________
+#  /  _____/  ____ /   _____/   __   \   ____/
+# /   \  ___ /  _ \\_____  \\____    /____  \
+# \    \_\  (  <_> )        \  /    //       \
+#  \______  /\____/_______  / /____//______  /
+#         \/              \/               \/
+# Copyright (c) 2008 2009 by
+# Alessandro Fraschetti (gos95@gommagomma.net)
+#
+# Project...: TrayServiceMonitor - A system tray windows service monitor
+# Module....: Makefile for MingW32 compiler
+# Author....: Alessandro Fraschetti
+# Notes.....:
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
+
+TARGET  = TrayServiceMonitor
+
+
+SRCPATH = src
+RESPATH = res
+OBJPATH = obj
+RELPATH = release
+
+
+CC      = gcc
+WINDRES = windres
+RM      = rm -f
+CP      = cp
+ZIP     = pkzip
+
+
+CFLAGS  = -pipe -Wall -g0 -O2 -frtti -fexceptions
+LDFLAGS = -pipe -s -mwindows -lcomctl32 -lstdc++
+
+
+BIN  = $(TARGET).exe
+OBJ  = $(OBJPATH)/TrayServiceMonitor.o $(OBJPATH)/About.o $(OBJPATH)/Properties.o $(OBJPATH)/Configure.o $(OBJPATH)/ServiceManager.o
+ROBJ = $(OBJPATH)/resource.o
+
+
+
+all: $(RELPATH)/$(BIN)
+	$(CP) $(TARGET).txt $(RELPATH)/$(TARGET).txt
+	$(CP) $(TARGET).ini $(RELPATH)/$(TARGET).ini
+	$(CP) license.txt $(RELPATH)/license.txt
+
+
+.PHONY: clean
+clean: $(RM) $(OBJ) $(ROBJ)
+
+
+$(RELPATH)/$(BIN): $(OBJ) $(ROBJ)
+	$(CC) -o $(RELPATH)/$(BIN) $(OBJ) $(ROBJ) $(LDFLAGS)
+
+
+$(OBJPATH)/TrayServiceMonitor.o: $(SRCPATH)/TrayServiceMonitor.cpp $(SRCPATH)/TrayServiceMonitor.h
+	$(CC) -c $(SRCPATH)/TrayServiceMonitor.cpp -o $(OBJPATH)/TrayServiceMonitor.o $(CFLAGS)
+
+$(OBJPATH)/About.o: $(SRCPATH)/About.cpp $(SRCPATH)/TrayServiceMonitor.h
+	$(CC) -c $(SRCPATH)/About.cpp -o $(OBJPATH)/About.o $(CFLAGS)
+
+$(OBJPATH)/Properties.o: $(SRCPATH)/Properties.cpp $(SRCPATH)/TrayServiceMonitor.h
+	$(CC) -c $(SRCPATH)/Properties.cpp -o $(OBJPATH)/Properties.o $(CFLAGS)
+
+$(OBJPATH)/Configure.o: $(SRCPATH)/Configure.cpp $(SRCPATH)/TrayServiceMonitor.h
+	$(CC) -c $(SRCPATH)/Configure.cpp -o $(OBJPATH)/Configure.o $(CFLAGS)
+
+$(OBJPATH)/ServiceManager.o: $(SRCPATH)/ServiceManager.cpp $(SRCPATH)/TrayServiceMonitor.h
+	$(CC) -c $(SRCPATH)/ServiceManager.cpp -o $(OBJPATH)/ServiceManager.o $(CFLAGS)
+
+$(OBJPATH)/resource.o: $(SRCPATH)/TrayServiceMonitor.rc $(SRCPATH)/resource.h
+	@$(WINDRES) -o $(OBJPATH)/resource.o $(SRCPATH)/TrayServiceMonitor.rc
